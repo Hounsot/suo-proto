@@ -68,9 +68,9 @@ export const kioskMenus: Record<MenuId, KioskMenu> = {
     options: [
       {
         id: "currency-exchange",
-        title: "Обмен валюты со скидкой",
+        title: "Обмен валюты",
         tags: ["< 10 000 $", "Currency exchange"],
-        ticketLabel: "Обмен валюты со скидкой · < 10 000 $",
+        ticketLabel: "Обмен валюты · < 10 000 $",
         plainArrow: true,
       },
       {
