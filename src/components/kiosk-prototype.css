@@ -1,0 +1,729 @@
+.kiosk-prototype-stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 1280px;
+  min-height: max(100dvh, 1024px);
+  background: #000;
+}
+
+.kiosk-home {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  box-sizing: border-box;
+  width: 1280px;
+  height: 1024px;
+  padding: 40px;
+  overflow: hidden;
+  border-radius: 32px;
+  background: #f2f3f7;
+  color: #1d2023;
+  font-family: "MTS Compact", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.kiosk-background-stack {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.kiosk-background-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #f2f3f7;
+}
+
+.kiosk-home__background {
+  position: absolute;
+  left: calc(50% - 45px);
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2214px;
+  height: 1128px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.kiosk-home__gradient {
+  position: relative;
+  flex: none;
+  width: 1128px;
+  height: 2214px;
+  transform: rotate(90deg) scaleY(-1);
+  filter: blur(10px);
+}
+
+.kiosk-home__gradient > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  object-position: bottom;
+}
+
+.kiosk-home__gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgb(255 255 255 / 50%) 80%
+  );
+}
+
+.kiosk-background-layer--business .kiosk-home__background {
+  left: calc(50% - 45.16px);
+  width: 3030px;
+  height: 1444px;
+}
+
+.kiosk-background-layer--business .kiosk-home__gradient {
+  width: 1444px;
+  height: 3030px;
+  transform: rotate(-90deg);
+  filter: blur(25px);
+}
+
+.kiosk-background-layer--business .kiosk-home__gradient > img { object-fit: cover; }
+
+.kiosk-home__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  width: 1200px;
+  height: 32px;
+}
+
+.kiosk-home__logo {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+.kiosk-home__business {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  color: inherit;
+  font-family: "MTS Wide", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.kiosk-home__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  flex: 1;
+  min-height: 0;
+  gap: 20px;
+}
+
+.kiosk-home__card {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  gap: 16px;
+  padding: 32px;
+  overflow: hidden;
+  border: 1px solid #fff;
+  border-radius: 40px;
+  background: rgb(255 255 255 / 55%);
+  color: inherit;
+  text-align: left;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.kiosk-home__card[data-selected],
+.kiosk-home__business[data-selected] {
+  background: rgb(255 255 255 / 90%);
+}
+
+.kiosk-home__card:focus-visible,
+.kiosk-home__business:focus-visible {
+  outline: 3px solid #ff0032;
+  outline-offset: -4px;
+}
+
+.kiosk-home__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.kiosk-home h2 {
+  margin: 0;
+  font-family: "MTS Wide", sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 36px;
+  letter-spacing: 0;
+}
+
+.kiosk-home p {
+  margin: 0;
+  font-family: "MTS Compact", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+}
+
+.kiosk-home__art-slot {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.kiosk-home__art {
+  position: absolute;
+}
+
+.kiosk-home__art img {
+  position: absolute;
+  display: block;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kiosk-home__card--deposits .kiosk-home__art {
+  right: -66.23px;
+  bottom: -66.11px;
+  width: 351.813px;
+  height: 351.813px;
+}
+
+.kiosk-home__card--loans .kiosk-home__art {
+  right: -56.26px;
+  bottom: -32.85px;
+  width: 307.693px;
+  height: 307.693px;
+  overflow: hidden;
+}
+
+.kiosk-home__card--loans .kiosk-home__art img {
+  top: 4.23%;
+}
+
+.kiosk-home__card--cards .kiosk-home__art {
+  right: -71.92px;
+  bottom: -23.97px;
+  width: 394.59px;
+  height: 241.735px;
+}
+
+.kiosk-home__card--cash .kiosk-home__art {
+  right: -27.8px;
+  bottom: -24.4px;
+  width: 281.164px;
+  height: 250.603px;
+  overflow: hidden;
+}
+
+.kiosk-home__card--cash .kiosk-home__art img {
+  left: 8.55%;
+  top: 0;
+  width: 93.34%;
+  height: 100.59%;
+  object-fit: fill;
+}
+
+.kiosk-home__card--premium .kiosk-home__art {
+  right: -57.4px;
+  bottom: -50.18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300.112px;
+  height: 300.112px;
+}
+
+.kiosk-home__premium-rotation {
+  position: relative;
+  flex: none;
+  width: 268.333px;
+  height: 268.333px;
+  transform: rotate(7.27deg);
+}
+
+.kiosk-home__card--services .kiosk-home__art {
+  right: -51.4px;
+  bottom: -40.34px;
+  width: 278.813px;
+  height: 278.813px;
+  overflow: hidden;
+}
+
+.kiosk-home__card--services .kiosk-home__art img {
+  left: 2.14%;
+  top: 6.48%;
+  width: 88.83%;
+  height: 88.83%;
+}
+
+.kiosk-prototype-viewport {
+  position: relative;
+  flex: 1;
+  width: 1200px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.kiosk-prototype-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.kiosk-home__logo-link {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kiosk-home__logo-link:focus-visible,
+.kiosk-menu__back:focus-visible,
+.kiosk-menu__option:focus-visible {
+  outline: 3px solid #ff0032;
+  outline-offset: -4px;
+}
+
+.kiosk-home--business .kiosk-home__copy p {
+  white-space: pre-line;
+}
+
+.kiosk-home__card--business-rko .kiosk-home__art {
+  left: calc(50% + 52.5px);
+  top: calc(50% + 10px);
+  width: 258px;
+  height: 262px;
+  transform: translate(-50%, -50%);
+}
+
+.kiosk-home__card--client-bank .kiosk-home__art {
+  right: -20.5px;
+  bottom: -12px;
+  width: 262px;
+  height: 230px;
+}
+
+.kiosk-home__card--acquiring .kiosk-home__art {
+  left: calc(50% + 55.76px);
+  top: calc(50% + 11.88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 271.174px;
+  height: 273.768px;
+  transform: translate(-50%, -50%);
+}
+
+.kiosk-home__business-rotation { position: relative; flex: none; }
+
+.kiosk-home__card--acquiring .kiosk-home__business-rotation {
+  width: 242px;
+  height: 245px;
+  transform: rotate(7.3deg);
+}
+
+.kiosk-home__card--payroll .kiosk-home__art {
+  right: -13.17px;
+  bottom: -11px;
+  width: 250px;
+  height: 225px;
+}
+
+.kiosk-home__card--business-deposits .kiosk-home__art {
+  left: calc(50% + 49.34px);
+  top: calc(50% + 23px);
+  width: 267px;
+  height: 262px;
+  transform: translate(-50%, -50%);
+}
+
+.kiosk-home__card--business-loans .kiosk-home__art {
+  right: -34.76px;
+  bottom: -29.95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 292.497px;
+  height: 253.925px;
+}
+
+.kiosk-home__card--business-loans .kiosk-home__business-rotation {
+  width: 273.881px;
+  height: 231.577px;
+  transform: rotate(4.85deg);
+}
+
+.kiosk-menu__heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: none;
+  width: 1200px;
+  height: 80px;
+  gap: 32px;
+}
+
+.kiosk-menu__back {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border: 0;
+  padding: 20px;
+  border-radius: 80px;
+  background: white;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kiosk-menu__icon-viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+}
+
+.kiosk-menu__icon-viewport img {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+.kiosk-menu__title,
+.kiosk-ticket__heading h1 {
+  margin: 0;
+  font-family: "MTS Wide", sans-serif;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 40px;
+  letter-spacing: 0;
+  outline: none;
+}
+
+.kiosk-menu__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(5, 136px);
+  flex: 1;
+  min-height: 0;
+  width: 1200px;
+  gap: 20px;
+}
+
+.kiosk-menu__option {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  min-width: 0;
+  padding: 32px;
+  border: 0;
+  border-radius: 40px;
+  background: #fff;
+  color: #1d2023;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kiosk-menu__option:active {
+  background: #f9fafc;
+}
+
+.kiosk-menu__option-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  gap: 8px;
+}
+
+.kiosk-menu__option-title {
+  width: 100%;
+  font-family: "MTS Wide", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  white-space: pre-line;
+}
+
+.kiosk-menu__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #f2f3f7;
+}
+
+.kiosk-menu__arrow--plain {
+  background: white;
+}
+
+.kiosk-menu__tags {
+  display: flex;
+  gap: 4px;
+  font-family: "MTS Text", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  white-space: nowrap;
+}
+
+.kiosk-menu__tags > span {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 4px 6px;
+  border-radius: 20px;
+  background: #f2f3f7;
+}
+
+.kiosk-ticket__heading {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 1200px;
+  height: 80px;
+  gap: 8px;
+  text-align: center;
+}
+
+.kiosk-ticket__heading p {
+  font-family: "MTS Text", sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.kiosk-ticket__content {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 1200px;
+  min-height: 0;
+}
+
+.kiosk-printer {
+  position: relative;
+  flex: none;
+  width: 582px;
+  height: 668.447px;
+}
+
+.kiosk-printer__slot {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 40px;
+  border: 1px solid rgb(188 195 208 / 20%);
+  border-radius: 42px;
+  background: #bbc1c7;
+  box-shadow: inset 0 0 4px rgb(0 0 0 / 25%);
+}
+
+.kiosk-printer__slot img {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  max-width: none;
+  border-radius: 20px;
+}
+
+.kiosk-printer__paper-window {
+  position: absolute;
+  left: 28px;
+  top: 20.447px;
+  width: 526px;
+  height: 648px;
+  overflow: hidden;
+  filter: drop-shadow(0 4px 12px rgb(0 0 0 / 20%));
+}
+
+.kiosk-printer__paper-shadow {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 26px;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 40%), transparent);
+  pointer-events: none;
+}
+
+.kiosk-receipt {
+  display: flex;
+  flex-direction: column;
+  width: 526px;
+  height: 648px;
+}
+
+.kiosk-receipt__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  padding: 50px 20px 20px;
+  gap: 20px;
+  background-image:
+    linear-gradient(0deg, rgb(0 0 0 / 5%) 0%, rgb(253 253 249 / 5%) 10%),
+    linear-gradient(90deg, #fdfdf9, #fdfdf9);
+}
+
+.kiosk-receipt__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  width: 100%;
+  height: 24px;
+  font-family: "MTS Wide", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.kiosk-receipt__header time,
+.kiosk-receipt__label {
+  font-family: "MTS Wide", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+  text-transform: uppercase;
+  color: #626c77;
+}
+
+.kiosk-receipt__header time {
+  text-align: right;
+}
+
+.kiosk-receipt__separator {
+  flex: none;
+  width: 100%;
+  height: 1px;
+  border-top: 1px dashed #8d969f;
+}
+
+.kiosk-receipt__number {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  gap: 20px;
+}
+
+.kiosk-receipt__number strong {
+  font-family: "MTS Wide", sans-serif;
+  font-size: 80px;
+  font-weight: 500;
+  line-height: 72px;
+}
+
+.kiosk-receipt__service {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  text-align: center;
+}
+
+.kiosk-receipt__service > [data-ticket-service] {
+  font-family: "MTS Text", sans-serif;
+  font-size: 20px;
+  line-height: 28px;
+  overflow-wrap: anywhere;
+}
+
+.kiosk-receipt__instructions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-family: "MTS Compact", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  color: #626c77;
+}
+
+.kiosk-receipt__edge {
+  display: block;
+  flex: none;
+  max-width: none;
+}

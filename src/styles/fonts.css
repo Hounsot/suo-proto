@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'MTS Compact';
+  src: url('../assets/fonts/MTSCompact-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MTS Compact';
+  src: url('../assets/fonts/MTSCompact-Medium.woff2') format('woff2');
+  font-weight: 500 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MTS Wide';
+  src: url('../assets/fonts/MTSWide-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MTS Wide';
+  src: url('../assets/fonts/MTSWide-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MTS Text';
+  src: url('../assets/fonts/MTSText-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
