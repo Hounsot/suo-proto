@@ -1,10 +1,16 @@
 .kiosk-prototype-stage {
-  display: grid;
-  place-items: center;
+  position: relative;
   width: 100%;
-  min-width: 1280px;
-  min-height: max(100dvh, 1024px);
+  height: 100dvh;
+  overflow: hidden;
   background: #000;
+}
+
+.kiosk-prototype-stage > .kiosk-prototype-shell {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
 }
 
 .kiosk-home {

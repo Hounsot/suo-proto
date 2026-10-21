@@ -197,11 +197,24 @@ function readRoute(): Route {
 }
 
 export function KioskPrototype() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(() => Math.min(1, window.innerWidth / 1280, window.innerHeight / 1024));
   const [route, setRoute] = useState<Route>(readRoute);
   const [direction, setDirection] = useState(1);
   const sequence = useRef(39);
   const navigationLockedUntil = useRef(0);
   const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setScale(Math.max(0, Math.min(1, width / 1280, height / 1024)));
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
 
   const navigate = useCallback((view: View, receipt: Receipt | null = null, backwards = false) => {
     if (Date.now() < navigationLockedUntil.current) return false;
@@ -257,8 +270,8 @@ export function KioskPrototype() {
   const business = route.view === "business" || (route.view in kioskMenus && kioskMenus[route.view as MenuId].business) || (route.view === "ticket" && route.receipt?.audience === "business");
   const heading = route.view === "home" ? "Выбор услуги" : route.view === "business" ? "Для бизнеса и ИП" : route.view === "ticket" ? "Ваш талон готов" : kioskMenus[route.view as MenuId].title;
 
-  return <div className="kiosk-prototype-stage">
-    <main className="kiosk-home kiosk-prototype-shell" data-kiosk-frame data-audience={business ? "business" : "retail"} aria-label="МТС Банк — терминал электронной очереди">
+  return <div className="kiosk-prototype-stage" ref={stageRef}>
+    <main className="kiosk-home kiosk-prototype-shell" style={{ transform: `translate(-50%, -50%) scale(${scale})` }} data-kiosk-frame data-audience={business ? "business" : "retail"} aria-label="МТС Банк — терминал электронной очереди">
       <KioskBackground business={!!business} />
       <KioskHeader action={route.view === "ticket" ? "На главную" : business ? "Физическим лицам" : "Для бизнеса и ИП"}
         onHome={() => navigate("home", null, true)} onAction={() => navigate(route.view === "ticket" || business ? "home" : "business", null, route.view === "ticket")} />
