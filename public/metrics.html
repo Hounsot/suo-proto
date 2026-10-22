@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>СУО · Метрики и сравнение навигации</title>
+  <style>
+    :root{color-scheme:light;--ink:#17191d;--muted:#717782;--line:#e4e6e9;--paper:#fff;--canvas:#f3f4f6;--red:#e30613;--red-soft:#fff0f1;--gray-soft:#f6f7f8;--radius:18px}
+    *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    .wrap{max-width:1440px;margin:auto;padding:34px 36px 48px}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:26px}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:750;color:var(--muted)}h1{font-size:clamp(30px,4vw,48px);letter-spacing:-.045em;line-height:1;margin:10px 0 9px}.subtitle{font-size:15px;color:#616771;margin:0}.stamp{font-size:12px;font-weight:700;color:#5d626a;border:1px solid #d9dce0;background:white;padding:9px 12px;border-radius:999px;white-space:nowrap}
+    .tabs{display:flex;gap:6px;padding:5px;background:#e7e9ec;border-radius:13px;width:max-content;margin-bottom:22px}.tab{border:0;background:transparent;padding:11px 16px;border-radius:9px;color:#585e67;font:650 14px inherit;cursor:pointer}.tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px #1112}
+    .summary{display:flex;align-items:center;gap:10px;margin-bottom:18px}.summary b{font-size:14px}.summary span{font-size:12px;color:var(--muted)}.dot{width:7px;height:7px;background:var(--red);border-radius:50%}
+    .layout{display:grid;grid-template-columns:minmax(430px, .95fr) minmax(460px,1.05fr);gap:18px;align-items:start}.box{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.box-head{padding:18px 20px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.box-head h2{margin:0;font-size:16px;letter-spacing:-.02em}.level{color:#fff;background:#292c31;padding:6px 9px;border-radius:7px;font-size:11px;font-weight:750;letter-spacing:.04em}
+    .entries{padding:9px;display:grid;grid-template-columns:1fr 1fr;gap:7px}.entry{appearance:none;text-align:left;background:#fff;border:1px solid transparent;border-radius:12px;padding:13px 13px 12px;min-height:72px;color:inherit;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}.entry:hover{background:#fafafa;border-color:#dfe1e4;transform:translateY(-1px)}.entry.selected{background:var(--red-soft);border-color:#f1a7ac}.entry.direct{background:#fafafa}.entry-title{display:block;font-size:14px;font-weight:700;line-height:1.28}.entry-sub{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:5px}.entry-mark{display:inline-flex;align-items:center;gap:6px}.entry-mark:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);flex:none}.entry-metric{display:flex;justify-content:space-between;gap:7px;align-items:center;margin-top:8px;color:#555b64;font-size:10px;font-variant-numeric:tabular-nums}.entry-metric b{font-weight:750;color:#272a2f}.entry-metric.unknown{color:#999fa7;font-style:italic}.bar{display:block;height:3px;background:#eceef0;border-radius:4px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--red);border-radius:4px}.hint{border-top:1px solid var(--line);padding:12px 18px;color:#777d85;font-size:12px;line-height:1.45}
+    .detail{min-height:520px}.detail-top{padding:23px 24px 20px;border-bottom:1px solid var(--line)}.crumb{display:flex;gap:7px;align-items:center;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.055em;text-transform:uppercase}.crumb i{font-style:normal;color:#b4b8be}.detail h3{font-size:28px;letter-spacing:-.04em;line-height:1.12;margin:13px 0 8px}.detail-desc{margin:0;color:#626873;font-size:13px;line-height:1.5}.levels{padding:18px 24px 24px}.level-label{display:flex;align-items:center;gap:9px;margin:0 0 10px;font-size:11px;font-weight:750;color:#717782;letter-spacing:.09em;text-transform:uppercase}.level-label:after{content:"";height:1px;background:var(--line);flex:1}.ops{display:flex;flex-direction:column;gap:7px}.op{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff}.op-title{font-size:13px;font-weight:650;line-height:1.35}.op-count{grid-column:1;font-size:10px;color:#555b64;font-variant-numeric:tabular-nums}.op-count b{color:#24272c}.route{grid-column:2;grid-row:1 / span 2;font-size:10px;color:#686e77;background:var(--gray-soft);border-radius:7px;padding:6px 8px;white-space:nowrap}.route.multi{max-width:180px;white-space:normal;text-align:right;line-height:1.3}.aggregate-note{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;margin:0 0 8px;background:#f7f8f9;border-radius:11px;color:#5d636c;font-size:11px;line-height:1.35}.aggregate-note b{color:#282b30;font-size:11px;white-space:nowrap}.direct-box{margin:20px 24px 24px;padding:15px 16px;background:#f7f8f9;border-radius:13px;display:flex;align-items:center;justify-content:space-between;gap:14px}.direct-box strong{font-size:13px}.direct-box small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.tag{font-size:10px;font-weight:750;background:#24272c;color:white;border-radius:6px;padding:6px 8px;white-space:nowrap}.empty{padding:18px;border:1px dashed #cfd3d8;border-radius:12px;color:#737983;font-size:12px;line-height:1.5}
+    .biz-layout{grid-template-columns:minmax(330px,.72fr) minmax(540px,1.28fr)}.biz-root{margin:12px;border:1px solid #f0b3b7;background:var(--red-soft);border-radius:13px;padding:15px}.biz-root b{font-size:14px}.biz-root small{display:block;color:#676d75;margin-top:5px;font-size:11px}.biz-entries{padding:0 9px 9px;display:flex;flex-direction:column}.biz-entries .entry{min-height:58px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px 10px}.biz-entries .entry-title{font-size:13px}.biz-entries .entry-metric,.biz-entries .bar{grid-column:1/-1;margin-top:0}.chev{color:#a1a5ab;font-size:20px;grid-column:2;grid-row:1}.biz-detail{min-height:520px}.subhead{display:flex;align-items:center;gap:10px;margin:18px 0 10px}.subhead:first-child{margin-top:0}.subhead h4{font-size:12px;letter-spacing:.055em;margin:0}.subhead span{font-size:10px;color:#8a9099}.group{margin-bottom:16px}.business-direct{margin-top:18px}
+    .unmatched{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}.unmatched h2{font-size:14px;margin:0 0 5px}.unmatched p{font-size:11px;color:var(--muted);margin:0 0 13px}.unmatched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.unmatched-item{background:#f7f8f9;border-radius:10px;padding:10px}.unmatched-item span{display:block;font-size:11px;color:#555b64}.unmatched-item b{display:block;font-size:13px;margin-top:5px;font-variant-numeric:tabular-nums}.total-note{font-size:11px;color:#656b74;margin-top:12px}.total-note b{color:#202328}
+    .mode-tabs{display:flex;gap:7px;align-items:center;margin:0 0 18px}.mode-tab{border:1px solid #dfe2e6;background:#fff;color:#555c65;padding:10px 15px;border-radius:10px;font:inherit;font-size:13px;font-weight:650;cursor:pointer}.mode-tab.active{background:#24272c;color:#fff;border-color:#24272c}.stats-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.stats-head{padding:20px 22px 16px;border-bottom:1px solid var(--line);display:flex;align-items:flex-end;justify-content:space-between;gap:16px}.stats-head h2{margin:0;font-size:19px;letter-spacing:-.025em}.stats-head p{margin:6px 0 0;color:var(--muted);font-size:12px}.stats-total{font-size:12px;color:#5d636c;white-space:nowrap}.stats-total b{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}.table-scroll{overflow:auto;max-height:calc(100vh - 310px);min-height:360px}.stats-table{width:100%;border-collapse:collapse;font-size:13px}.stats-table th{position:sticky;top:0;z-index:1;background:#f5f6f7;color:#6b717a;text-align:left;font-size:11px;letter-spacing:.035em;font-weight:750;padding:12px 16px;border-bottom:1px solid var(--line)}.stats-table td{padding:12px 16px;border-bottom:1px solid #eff0f2;vertical-align:middle}.stats-table tbody tr:hover{background:#fafafa}.stats-table .rank{width:54px;color:#9298a0;font-variant-numeric:tabular-nums}.stats-table .service{font-weight:650;min-width:250px}.stats-table .section-name{color:#707680;min-width:170px}.stats-table .count,.stats-table .share{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.stats-table .count{font-weight:700}.stats-table .share{width:190px;color:#555c65}.share-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px}.share-track{width:84px;height:5px;border-radius:9px;background:#eceef0;overflow:hidden}.share-track i{display:block;height:100%;background:#e30613;border-radius:9px}.stats-foot{padding:12px 18px;color:#777d85;font-size:11px;background:#fbfbfc}
+    .proposal-intro{margin:0 0 18px;padding:22px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}.proposal-intro h2{margin:3px 0 7px;font-size:23px;letter-spacing:-.035em}.proposal-intro p{margin:0;color:#68707a;font-size:12px;line-height:1.5}.proposal-summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.proposal-summary span{background:#f5f6f7;border-radius:8px;padding:8px 10px;font-size:11px;color:#5e6670}.proposal-summary b{color:#17191d;font-size:13px}.change-log{margin:0 0 20px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.change-log-head{padding:18px 20px;border-bottom:1px solid var(--line)}.change-log-head h2{margin:0;font-size:17px}.change-log-head p{margin:5px 0 0;color:#777d85;font-size:11px}.change-list{display:grid;grid-template-columns:1fr 1fr}.change{display:grid;grid-template-columns:30px minmax(0,1fr);gap:9px;padding:14px 18px;border-bottom:1px solid #eef0f2;min-height:82px}.change:nth-child(odd){border-right:1px solid #eef0f2}.change-number{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#fff0f1;color:#bd0914;font-size:11px;font-weight:800}.change b{display:block;font-size:12px;line-height:1.35}.change span{display:block;color:#6f7680;font-size:11px;line-height:1.45;margin-top:4px}.proposal-tabs{margin-bottom:15px}.proposal-entry-label{font-size:11px;color:#7a8088;margin:0 0 8px 3px}.proposal-business-link{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid #dce0e4;border-radius:11px;background:#f8f9fa;padding:12px 14px;text-align:left;font:inherit;font-size:12px;font-weight:700;color:#272b30;cursor:pointer;margin-top:8px}.proposal-business-link small{font-size:10px;font-weight:500;color:#777d85}.proposal-business-link:hover{border-color:#b9bec5}.proposal-op-note{display:block;color:#858b93;font-size:10px;margin-top:3px}.proposal-ops .op{grid-template-columns:minmax(0,1fr) auto}.proposal-ops .op-count{grid-column:1}.proposal-ops .route{grid-column:2}.proposal-group-label{margin:14px 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#8b9199;font-weight:750}.proposal-group-label:first-child{margin-top:0}.proposal-unknown{margin:18px 0 0;padding:13px 16px;background:#fff;border:1px solid var(--line);border-radius:11px;color:#69717b;font-size:11px;line-height:1.5}
+    footer{display:flex;justify-content:space-between;gap:15px;margin-top:16px;color:#777d85;font-size:11px}.note{max-width:800px}.hidden{display:none!important}
+    @media(max-width:900px){.wrap{padding:24px 18px}.layout,.biz-layout{grid-template-columns:1fr}.detail{min-height:0}.top{flex-direction:column}.entries{grid-template-columns:1fr 1fr}}
+    @media(max-width:650px){.change-list{grid-template-columns:1fr}.change:nth-child(odd){border-right:0}.proposal-summary{display:grid;grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.entries{grid-template-columns:1fr}.op{grid-template-columns:1fr}.op-count{grid-column:1}.route,.route.multi{grid-column:1;grid-row:auto;justify-self:start;max-width:none}.tabs{width:100%}.tab{flex:1}.detail h3{font-size:24px}.unmatched-grid{grid-template-columns:1fr 1fr}.mode-tabs{display:grid;grid-template-columns:1fr 1fr}.mode-tab{padding:10px}.mode-tab:last-child{grid-column:1/-1}.stats-head{align-items:flex-start;flex-direction:column}.table-scroll{max-height:none}.stats-table th,.stats-table td{padding:10px}.stats-table .section-name{min-width:135px}.share-track{display:none}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <nav aria-label="Страницы проекта" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:24px;font-size:14px">
+      <a href="./" style="color:#17191d;font-weight:650;text-decoration:none">← Рабочий прототип</a>
+      <span style="color:#717782">Метрики и сравнение навигации</span>
+    </nav>
+    <header class="top"><div><div class="eyebrow">МТС Банк · исходная навигация</div><h1>Меню услуг</h1><p class="subtitle">Структура до изменений · Июль 2026</p></div><div class="stamp">По исходной таблице</div></header>
+    <nav class="mode-tabs" aria-label="Режим отображения"><button class="mode-tab active" data-mode="navigation">Как сейчас · As is</button><button class="mode-tab" data-mode="proposal">Как предлагаем · To be</button><button class="mode-tab" data-mode="statistics">Статистика</button></nav>
+    <div id="navigation-mode">
+    <nav class="tabs" aria-label="Тип клиента"><button class="tab active" data-audience="retail">Физические лица</button><button class="tab" data-audience="business">ЮЛ и ИП</button></nav>
+    <section id="retail-view">
+      <div class="summary"><span class="dot"></span><b>12 пунктов на первом экране</b><span>Статистика: 283 055 талонов · доля рассчитана от общего количества</span></div>
+      <div class="layout">
+        <section class="box"><div class="box-head"><h2>Точка входа</h2><span class="level">ЭКРАН 1</span></div><div class="entries" id="retail-entries"></div><div class="hint">Красная точка отмечает раздел со вторым экраном. Прямые кнопки сразу ведут к талону, а «ЮЛ и ИП» открывает отдельную ветку.</div></section>
+        <section class="box detail" id="retail-detail" aria-live="polite"></section>
+      </div>
+    </section>
+    <section id="business-view" class="hidden">
+      <div class="summary"><span class="dot"></span><b>Отдельная точка входа для бизнеса</b><span>Общий знаменатель: 283 055 талонов · показан известный объём по совпадающим строкам</span></div>
+      <div class="layout biz-layout">
+        <section class="box"><div class="box-head"><h2>Вход и разделы</h2><span class="level">ЭКРАН 1–2</span></div><div class="biz-root"><b>Обслуживание юридических лиц и ИП</b><small>Выбор на первом экране</small></div><div class="biz-entries" id="business-entries"></div><div class="hint">Для части разделов таблица сразу указывает сотрудника, но не перечисляет отдельные операции на следующем экране.</div></section>
+        <section class="box detail biz-detail" id="business-detail" aria-live="polite"></section>
+      </div>
+    </section>
+    <section class="unmatched"><h2>Строки статистики без отдельной кнопки с таким названием</h2><p>Не включены в суммы разделов, чтобы не приписывать их соседним пунктам без подтверждения.</p><div class="unmatched-grid" id="unmatched-items"></div><div class="total-note" id="unmatched-total"></div></section>
+    </div>
+    <section id="proposal-mode" class="hidden" aria-label="Предлагаемая структура меню">
+      <aside style="padding:14px 18px;margin-bottom:18px;border:1px solid #e4e6e9;border-radius:14px;background:#fff;font-size:13px;line-height:1.5;color:#616771">
+        Здесь сохранён ранее подготовленный аналитический вариант To be, а не замеры нового прототипа. В нём 4 бизнес-раздела; в финальном прототипе — 6: РКО, клиент-банк, эквайринг, зарплатный проект, депозиты и кредиты. Проценты рассчитаны по исходной статистике выдачи талонов, не по фактическим кликам.
+      </aside>
+      <div class="proposal-intro"><div class="eyebrow">Предлагаемая навигация · To be</div><h2>Меньше разделов, понятнее маршрут</h2><p>Все операции исходного меню сохранены. «Другие услуги» объединяют сервисы, справки, перевод со счёта и общий вопрос.</p><div class="proposal-summary"><span><b>12 → 7</b><br>точек входа на главном экране</span><span><b>7 → 4</b><br>раздела в ветке бизнеса</span><span><b>1 раздел</b><br>для остальных услуг и вопросов</span><span><b>283 055</b><br>талонов в исходной статистике</span></div></div>
+      <section class="change-log"><div class="change-log-head"><h2>Что изменилось</h2><p>Сравнение с «Как сейчас» — каждый перенос можно увидеть в структуре ниже.</p></div><div class="change-list">
+        <div class="change"><span class="change-number">1</span><div><b>Платёж по кредиту → «Кредиты»</b><span>Убираем отдельную кнопку. Платёж стоит первым внутри раздела; для 27 726 талонов это 2 нажатия вместо 1.</span></div></div>
+        <div class="change"><span class="change-number">2</span><div><b>Зарплатная карта → «Карты»</b><span>Убираем отдельную кнопку; получение зарплатной карты видно рядом с остальными карточными действиями. Для 4 865 талонов это 2 нажатия вместо 1.</span></div></div>
+        <div class="change"><span class="change-number">3</span><div><b>«Переводы» → «Другие услуги»; платежи из «Ареста по счёту» → «Кредиты»</b><span>Оба особых платежа находятся рядом с обычным платежом по кредиту. Исходная адресация талонов сохранена.</span></div></div>
+        <div class="change"><span class="change-number">4</span><div><b>«Ещё» и «Обращения и предложения» → «Другие услуги»</b><span>Справки, страхование, инвестиции и обращения перечислены по имени. Для 18 644 талонов по обращениям это 2 нажатия вместо 1.</span></div></div>
+        <div class="change"><span class="change-number">5</span><div><b>«Другие вопросы» → внутрь «Других услуг»</b><span>Отдельную кнопку на главном экране убрали. Для 36 797 талонов снова требуется 2 нажатия, как в As is.</span></div></div>
+        <div class="change"><span class="change-number">6</span><div><b>Бизнес: 7 разделов → 4</b><span>«Клиент-банк» (1 971 талон) остаётся отдельной кнопкой и четвёртым пунктом. Зарплатный проект и эквайринг собраны в «Бизнес-сервисы», кредитная заявка — в «Кредиты для бизнеса», депозит юрлица — в «Счета и РКО».</span></div></div>
+        <div class="change"><span class="change-number">7</span><div><b>Премиальные клиенты → «Премиум клиент»</b><span>Короткая подпись, которая помещается на кнопке; прямой путь к талону сохранён. Вход для ЮЛ и ИП назван «Бизнесу и ИП».</span></div></div>
+        <div class="change"><span class="change-number">8</span><div><b>Различаем две бизнес-справки</b><span>В РКО остаётся «Оформление справок», в кредитах — «Оформление справок по кредиту». Адресация сохранена.</span></div></div>
+      </div></section>
+      <nav class="tabs proposal-tabs" aria-label="Предлагаемое меню для типа клиента"><button class="tab active" data-proposal-audience="retail">Физические лица</button><button class="tab" data-proposal-audience="business">Бизнесу и ИП</button></nav>
+      <div class="summary"><span class="dot"></span><b id="proposal-view-title">6 услуг + вход для бизнеса</b><span>Частота приведена для известных строк статистики</span></div>
+      <div class="layout" id="proposal-layout"><section class="box"><div class="box-head"><h2 id="proposal-root-title">Главный экран</h2><span class="level" id="proposal-root-level">ЭКРАН 1</span></div><div class="entries" id="proposal-entries"></div><div class="hint" id="proposal-hint">Выберите раздел, чтобы увидеть все его операции и адресацию талона.</div></section><section class="box detail" id="proposal-detail" aria-live="polite"></section></div>
+      <div class="proposal-unknown">Четыре строки статистики без однозначного соответствия кнопкам исходного меню — PAY TAG, «Прочие вопросы», «Импорт / Экспорт» и «Другие консультации» — пока не перенесены как отдельные пункты. Их объём: 3 850 талонов (1,36%). Для окончательной адресации потребуется подтверждение владельца очереди.</div>
+    </section>
+    <section id="statistics-mode" class="stats-panel hidden" aria-label="Статистика по талонам"><div class="stats-head"><div><h2>Популярность услуг</h2><p>Все строки исходной статистики, отсортированы по числу выданных талонов</p></div><div class="stats-total">Всего талонов<br><b>283 055</b></div></div><div class="table-scroll"><table class="stats-table"><thead><tr><th>№</th><th>Название услуги</th><th>Раздел исходного меню</th><th style="text-align:right">Талоны</th><th style="text-align:right">Доля</th></tr></thead><tbody id="stats-rows"></tbody></table></div><div class="stats-foot">Доля рассчитана от общего числа — 283 055 талонов. Красная шкала показывает объём относительно самой частой услуги, а не прогресс выполнения.</div></section>
+    <footer><span class="note">Структура: «Список операций, адресация. Июль 2026». Статистика: переданная сводная таблица, 46 строк. Процент каждой строки рассчитан от 283 055 талонов.</span><span>Экран 1 → Экран 2 → Экран 3</span></footer>
+  </main>
+  <script>
+    const retail = [
+      {title:'Получить зарплатную карту',direct:true,to:['Операционист ФЛ']},
+      {title:'Премиальные клиенты',direct:true,to:['Менеджер VIP (при наличии)','Операционист ФЛ','РНП']},
+      {title:'Карты',children:['Открыть/получить новую карту','Перевыпуск карты','Другие операции/консультации по картам'],to:['Операционист ФЛ']},
+      {title:'Очередной платеж по кредиту',direct:true,to:['Операционист ФЛ','Кассир']},
+      {title:'Касса',subtitle:'Обмен валюты · со скидкой · платежи от USD 1 000',children:['Обмен валюты','Обмен валюты со скидкой','Платежи (от USD 1 000)'],to:['Кассир']},
+      {title:'Кредиты',subtitle:'Заявка · досрочное погашение',children:['Заявка на кредит / кредитную карту/ипотека','Выдача кредита / одобренной кредитной карты','Досрочное погашение кредита','Заявление на реструктуризацию задолженности','Консультация по кредиту'],to:['Операционист ФЛ']},
+      {title:'Вклады',children:['Открыть новый вклад','Пополнение/пролонгация вклада','Другие операции/консультации по вкладам'],to:['Операционист ФЛ']},
+      {title:'Переводы',children:['Перевод денежных средств со счета'],to:['Операционист ФЛ']},
+      {title:'Обращения и предложения',direct:true,to:['Операционист ФЛ']},
+      {title:'Ещё',subtitle:'Инвестиции, страхование, справки, выписки',children:['Инвестиционные продукты','Страховые и пенсионные продукты','Справки и выписки по счетам','Регистрация в единую биометрическую систему','Другие вопросы','Получение СИМ карты МТС','Установка мобильного приложения Банка'],to:['Операционист ФЛ']},
+      {title:'Арест по счету',children:['Погашение по кредитной карте, погашение платежа по кредиту в плановую дату или есть просрочка','Внесение платежа заранее с привлечением 3-го лица'],to:['Кассир','Операционист ФЛ']},
+      {title:'Юридические лица и ИП (при наличии)',subtitle:'Отдельная ветка · см. вкладку «ЮЛ и ИП»',external:true}
+    ];
+    const business = [
+      {title:'Расчётно-кассовое обслуживание',children:['Консультация по расчетно-кассовому обслуживанию','Открытие счета','Взнос на счет денежных средств','Выдача со счета денежных средств по чековой книжке','Подготовка платежного поручения','Оформление справок','Прочие вопросы по РКО'],to:['Операционист ЮЛ']},
+      {title:'Кредит',children:['Консультация по кредиту для бизнеса','Вопрос по действующему кредитному договору или банковской гарантии','Оформление справок','Прочие вопросы по кредиту для бизнеса'],to:['Менеджер МБ']},
+      {title:'Заявка на кредит',to:['Менеджер МБ']},
+      {title:'Зарплатный проект',to:['Менеджер МБ','Операционист ЮЛ']},
+      {title:'Эквайринг',to:['Менеджер МБ','Операционист ЮЛ']},
+      {title:'Клиент-банк',to:['Операционист ЮЛ']},
+      {title:'Депозит юридического лица',to:['Менеджер МБ','Операционист ЮЛ']}
+    ];
+    let selectedRetail=5, selectedBusiness=0;
+    const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const totalTickets=283055;
+    const retailTotals=[4865,5833,42788,27726,15489,35239,65039,3317,18644,48413,4993,6859];
+    const retailPartial=new Set([11]);
+    const retailLeaves=[[],[],[14981,4145,23662],[],[null,null,4795],[7201,4445,8567,1888,13138],[19133,19412,26494],[3317],[],[233,448,9883,418,36797,585,49],[2901,2092],[]];
+    const businessTotals=[3996,60,79,261,282,1971,210];
+    const businessPartial=new Set([0]);
+    const businessLeaves=[[849,758,1192,557,416,224,null],[21,10,8,21],[],[],[],[],[]];
+    const unmatched=[['Получение PAY TAG',2269],['Прочие вопросы',1503],['Импорт / Экспорт',76],['Другие консультации',2]];
+    const statistics=[
+      ['Другие вопросы',36797,'Ещё'],['Очередной платеж по кредиту',27726,'Отдельная кнопка'],['Другие операции / консультации по вкладам',26494,'Вклады'],['Другие операции / консультации по картам',23662,'Карты'],['Пополнение / пролонгация вклада',19412,'Вклады'],['Открыть новый вклад',19133,'Вклады'],['Обращения и предложения',18644,'Отдельная кнопка'],['Открыть / получить новую карту',14981,'Карты'],['Консультация по кредиту',13138,'Кредиты'],['Обмен валюты / Currency Exchange',10694,'Касса · обмен валюты (оба варианта вместе)'],['Справки и выписки по счетам',9883,'Ещё'],['Досрочное погашение кредита',8567,'Кредиты'],['Заявка на кредит / кредитную карту / ипотека',7201,'Кредиты'],['Премиальные клиенты',5833,'Отдельная кнопка'],['Получить зарплатную карту',4865,'Отдельная кнопка'],['Платежи',4795,'Касса'],['Выдача кредита / одобренной кредитной карты',4445,'Кредиты'],['Перевыпуск карты',4145,'Карты'],['Перевод денежных средств со счета',3317,'Переводы'],['Погашение по кредитной карте, Погашение платежа по кредиту в плановую дату или есть просрочка',2901,'Арест по счёту'],['Получение PAY TAG',2269,'Нет отдельного пункта в меню'],['Внесение платежа заранее с привлечением 3-го лица',2092,'Арест по счёту'],['КЛИЕНТ-БАНК',1971,'ЮЛ и ИП · отдельный раздел'],['Заявление на реструктуризацию задолженности',1888,'Кредиты'],['Прочие вопросы',1503,'Не сопоставлено'],['Взнос на счет денежных средств',1192,'ЮЛ и ИП · РКО'],['Консультация по расчетно-кассовому обслуживанию',849,'ЮЛ и ИП · РКО'],['Открытие счета',758,'ЮЛ и ИП · РКО'],['Получение СИМ карты МТС',585,'Ещё'],['Выдача со счета денежных средств по чековой книжке',557,'ЮЛ и ИП · РКО'],['Страховые и пенсионные продукты',448,'Ещё'],['Регистрация в единую биометрическую систему',418,'Ещё'],['Подготовка платежного поручения',416,'ЮЛ и ИП · РКО'],['ЭКВАЙРИНГ',282,'ЮЛ и ИП · отдельный раздел'],['ЗАРПЛАТНЫЙ ПРОЕКТ',261,'ЮЛ и ИП · отдельный раздел'],['Инвестиционные продукты',233,'Ещё'],['Оформление справок',224,'ЮЛ и ИП · РКО'],['ДЕПОЗИТ юридического лица',210,'ЮЛ и ИП · отдельный раздел'],['Заявка на кредит юр.лицо',79,'ЮЛ и ИП · заявка на кредит'],['Импорт / Экспорт',76,'Не сопоставлено'],['Установка мобильного приложения Банка',49,'Ещё'],['Консультация по кредиту для бизнеса',21,'ЮЛ и ИП · кредит'],['Прочие вопросы (кредит для бизнеса)',21,'ЮЛ и ИП · кредит'],['Вопрос по действующему кредитному договору или банковской гарантии',10,'ЮЛ и ИП · кредит'],['Оформление справок (кредит для бизнеса)',8,'ЮЛ и ИП · кредит'],['Другие консультации',2,'Не сопоставлено']
+    ];
+    const proposalRetail=[
+      {title:'Вклады',subtitle:'Открыть, пополнить, продлить',count:65039,to:['Операционист ФЛ'],items:[
+        {title:'Другие операции / консультации по вкладам',count:26494},{title:'Пополнение / пролонгация вклада',count:19412},{title:'Открыть новый вклад',count:19133}]},
+      {title:'Кредиты',subtitle:'Платёж, досрочное погашение, заявка',count:67958,to:['Операционист ФЛ'],items:[
+        {group:'Платежи по кредиту'},
+        {title:'Очередной платеж по кредиту',count:27726,to:['Операционист ФЛ','Кассир'],from:'Ранее — кнопка первого экрана'},
+        {title:'Досрочное погашение кредита',count:8567},
+        {title:'Погашение по кредитной карте, погашение платежа по кредиту в плановую дату или есть просрочка',count:2901,to:['Кассир','Операционист ФЛ'],from:'Ранее — раздел «Арест по счету»'},
+        {title:'Внесение платежа заранее с привлечением 3-го лица',count:2092,to:['Кассир','Операционист ФЛ'],from:'Ранее — раздел «Арест по счету»'},
+        {group:'Оформление и консультации'},
+        {title:'Консультация по кредиту',count:13138},
+        {title:'Заявка на кредит / кредитную карту / ипотека',count:7201},
+        {title:'Выдача кредита / одобренной кредитной карты',count:4445},
+        {title:'Заявление на реструктуризацию задолженности',count:1888}]},
+      {title:'Карты',subtitle:'Получить, перевыпустить, решить вопрос',count:47653,to:['Операционист ФЛ'],items:[
+        {title:'Другие операции / консультации по картам',count:23662},{title:'Открыть / получить новую карту',count:14981},
+        {title:'Получить зарплатную карту',count:4865,from:'Ранее — кнопка первого экрана'},
+        {title:'Перевыпуск карты',count:4145}]},
+      {title:'Другие услуги',subtitle:'Вопросы, переводы, справки и сервисы',count:70374,to:['Операционист ФЛ'],items:[
+        {group:'Вопросы и документы'},
+        {title:'Другой вопрос',count:36797,from:'Ранее — «Другие вопросы» внутри раздела «Ещё»'},
+        {title:'Обращения и предложения',count:18644,from:'Ранее — кнопка первого экрана'},
+        {title:'Справки и выписки по счетам',count:9883},
+        {group:'Переводы'},
+        {title:'Перевод денежных средств со счета',count:3317,from:'Ранее — раздел «Переводы»'},
+        {group:'Другие сервисы'},
+        {title:'Получение СИМ карты МТС',count:585},
+        {title:'Страховые и пенсионные продукты',count:448},
+        {title:'Регистрация в единую биометрическую систему',count:418},
+        {title:'Инвестиционные продукты',count:233},
+        {title:'Установка мобильного приложения Банка',count:49}]},
+      {title:'Касса',subtitle:'Обмен валюты и платежи',count:15489,to:['Кассир'],items:[
+        {title:'Обмен валюты',count:null,to:['Кассир'],from:'Общая статистика с вариантом «со скидкой»'},
+        {title:'Обмен валюты со скидкой',count:null,to:['Кассир'],from:'Общая статистика с обычным обменом'},
+        {title:'Платежи (от USD 1 000)',count:4795,to:['Кассир']}]},
+      {title:'Премиум клиент',subtitle:'Обслуживание премиальных клиентов',count:5833,direct:true,to:['Менеджер VIP (при наличии)','Операционист ФЛ','РНП'],from:'Ранее — «Премиальные клиенты»'}
+    ];
+    const proposalBusiness=[
+      {title:'Счета и РКО',subtitle:'Счёт, касса, депозит, справки',count:4206,partial:true,to:['Операционист ЮЛ'],items:[
+        {title:'Взнос на счет денежных средств',count:1192},
+        {title:'Консультация по расчетно-кассовому обслуживанию',count:849},
+        {title:'Открытие счета',count:758},
+        {title:'Выдача со счета денежных средств по чековой книжке',count:557},
+        {title:'Подготовка платежного поручения',count:416},
+        {title:'Оформление справок',count:224},
+        {title:'Депозит юридического лица',count:210,to:['Менеджер МБ','Операционист ЮЛ'],from:'Ранее — отдельный раздел второго экрана'},
+        {title:'Прочие вопросы по РКО',count:null,from:'Отдельной строки в статистике нет'}]},
+      {title:'Бизнес-сервисы',subtitle:'Эквайринг и зарплатный проект',count:543,to:['Операционист ЮЛ'],items:[
+        {title:'Эквайринг',count:282,to:['Менеджер МБ','Операционист ЮЛ']},
+        {title:'Зарплатный проект',count:261,to:['Менеджер МБ','Операционист ЮЛ']}]},
+      {title:'Кредиты для бизнеса',subtitle:'Заявка и действующий кредит',count:139,to:['Менеджер МБ'],items:[
+        {title:'Заявка на кредит',count:79,from:'Ранее — отдельный раздел второго экрана'},
+        {title:'Консультация по кредиту для бизнеса',count:21},
+        {title:'Прочие вопросы по кредиту для бизнеса',count:21},
+        {title:'Вопрос по действующему кредитному договору или банковской гарантии',count:10},
+        {title:'Оформление справок по кредиту',count:8,from:'В исходной структуре — «Оформление справок» внутри раздела «Кредит»'}]},
+      {title:'Клиент-банк',subtitle:'Вопросы по дистанционному обслуживанию',count:1971,direct:true,to:['Операционист ЮЛ']}
+    ];
+    let proposalAudience='retail',selectedProposalRetail=0,selectedProposalBusiness=0;
+    const number=n=>new Intl.NumberFormat('ru-RU').format(n);
+    const percent=n=>n/totalTickets*100<0.01?'<0,01':new Intl.NumberFormat('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:2}).format(n/totalTickets*100);
+    function metricMarkup(n,partial=false,bar=false,unknownText='Нет отдельной строки в статистике'){
+      if(n==null)return `<span class="entry-metric unknown">${escapeHtml(unknownText)}</span>`;
+      const sign=partial?'≥ ':'';
+      const fill=Math.min(100,n/totalTickets*400);
+      return `<span class="entry-metric">${sign}${number(n)} тал. <b>${sign}${percent(n)}%</b></span>${bar?`<span class="bar"><i style="width:${fill}%"></i></span>`:''}`;
+    }
+    function decorateEntries(host,totals,partial){
+      host.querySelectorAll('.entry').forEach((el,i)=>el.insertAdjacentHTML('beforeend',metricMarkup(totals[i],partial.has(i),true)));
+    }
+    function decorateOps(container,counts,unknownText='Нет отдельной строки в статистике'){
+      container.querySelectorAll('.op').forEach((el,i)=>el.insertAdjacentHTML('beforeend',metricMarkup(counts[i],false,false,unknownText)));
+    }
+    function renderRetail(){
+      const host=document.getElementById('retail-entries');
+      host.innerHTML=retail.map((x,i)=>`<button class="entry ${i===selectedRetail?'selected':''} ${x.direct?'direct':''}" data-index="${i}"><span class="entry-title ${x.direct?'':'entry-mark'}">${escapeHtml(x.title)}</span>${x.subtitle?`<span class="entry-sub">${escapeHtml(x.subtitle)}</span>`:''}</button>`).join('');
+      decorateEntries(host,retailTotals,retailPartial);
+      host.querySelectorAll('.entry').forEach(el=>el.addEventListener('click',()=>{selectedRetail=Number(el.dataset.index);renderRetail()}));
+      const x=retail[selectedRetail],detail=document.getElementById('retail-detail');
+      const hasKids=!!x.children;
+      detail.innerHTML=`<div class="detail-top"><div class="crumb"><span>Физические лица</span><i>›</i><span>Экран 1</span>${hasKids?'<i>›</i><span>Экран 2</span>':''}</div><h3>${escapeHtml(x.title)}</h3><p class="detail-desc">${x.external?'Переход в отдельный раздел обслуживания бизнеса. Подробности собраны во вкладке «ЮЛ и ИП».':hasKids?'После выбора раздела клиент видит эти операции на втором экране.':'Кнопка первого экрана сразу формирует талон по выбранному вопросу.'}</p></div>${hasKids?`<div class="levels"><div class="level-label">Экран 2 · выбор операции</div>${selectedRetail===4?`<div class="aggregate-note"><span>Оба варианта обмена валюты, вместе</span><b>${number(10694)} тал. · ${percent(10694)}%</b></div>`:''}<div class="ops">${x.children.map(child=>`<div class="op"><span class="op-title">${escapeHtml(child)}</span><span class="route ${x.to.length>1?'multi':''}">${escapeHtml(x.to.join(' · '))}</span></div>`).join('')}</div></div>`:x.external?'':`<div class="direct-box"><div><strong>Куда направляется талон</strong><small>${escapeHtml(x.to.join(' · '))}</small></div><span class="tag">СРАЗУ</span></div>`}`;
+      if(hasKids)decorateOps(detail,retailLeaves[selectedRetail],selectedRetail===4?'Отдельная частота не выделена':'Нет отдельной строки в статистике');
+    }
+    function renderBusiness(){
+      const host=document.getElementById('business-entries');
+      host.innerHTML=business.map((x,i)=>`<button class="entry ${i===selectedBusiness?'selected':''}" data-index="${i}"><span class="entry-title entry-mark">${escapeHtml(x.title)}</span><span class="chev">›</span></button>`).join('');
+      decorateEntries(host,businessTotals,businessPartial);
+      const businessRoot=document.querySelector('.biz-root');
+      if(!businessRoot.dataset.metricReady){businessRoot.insertAdjacentHTML('beforeend',metricMarkup(6859,true,true));businessRoot.dataset.metricReady='true'}
+      host.querySelectorAll('.entry').forEach(el=>el.addEventListener('click',()=>{selectedBusiness=Number(el.dataset.index);renderBusiness()}));
+      const x=business[selectedBusiness],detail=document.getElementById('business-detail');
+      detail.innerHTML=`<div class="detail-top"><div class="crumb"><span>ЮЛ и ИП</span><i>›</i><span>Экран 1</span><i>›</i><span>Экран 2</span>${x.children?'<i>›</i><span>Экран 3</span>':''}</div><h3>${escapeHtml(x.title)}</h3><p class="detail-desc">${x.children?'На третьем экране клиент выбирает конкретную операцию. Для всех указанных пунктов талон направляется одному специалисту.':'Раздел второго экрана. В таблице указана адресация талона, но отдельные операции третьего экрана не перечислены.'}</p></div><div class="levels">${x.children?`<div class="level-label">Экран 3 · выбор операции</div><div class="ops">${x.children.map(child=>`<div class="op"><span class="op-title">${escapeHtml(child)}</span><span class="route">${escapeHtml(x.to.join(' · '))}</span></div>`).join('')}</div>`:`<div class="direct-box business-direct"><div><strong>Куда направляется талон</strong><small>${escapeHtml(x.to.join(' · '))}</small></div><span class="tag">ТАЛОН</span></div><div class="empty">В исходной таблице для этого раздела нет списка операций на следующем экране. Сотрудник указан в колонке «Адресация (кому)».</div>`}</div>`;
+      if(x.children)decorateOps(detail,businessLeaves[selectedBusiness]);
+    }
+    function renderUnmatched(){
+      const host=document.getElementById('unmatched-items');
+      host.innerHTML=unmatched.map(([label,n])=>`<div class="unmatched-item"><span>${escapeHtml(label)}</span><b>${number(n)} · ${percent(n)}%</b></div>`).join('');
+      const n=unmatched.reduce((sum,item)=>sum+item[1],0);
+      document.getElementById('unmatched-total').innerHTML=`Итого без точного пункта в исходном меню: <b>${number(n)} талонов · ${percent(n)}%</b>`;
+    }
+    function renderStatistics(){
+      const rows=[...statistics].sort((a,b)=>b[1]-a[1]);
+      document.getElementById('stats-rows').innerHTML=rows.map(([label,count,section],i)=>`<tr><td class="rank">${i+1}</td><td class="service">${escapeHtml(label)}</td><td class="section-name">${escapeHtml(section)}</td><td class="count">${number(count)}</td><td class="share"><span class="share-wrap"><span>${percent(count)}%</span><span class="share-track"><i style="width:${Math.min(count/rows[0][1]*100,100)}%"></i></span></span></td></tr>`).join('');
+    }
+    function proposalCount(n,partial=false){return n==null?'Нет отдельной строки в статистике':`${partial?'≥ ':''}${number(n)} тал. · ${partial?'≥ ':''}${percent(n)}%`}
+    function renderProposal(){
+      const isBusiness=proposalAudience==='business';
+      const data=isBusiness?proposalBusiness:proposalRetail;
+      const selected=isBusiness?selectedProposalBusiness:selectedProposalRetail;
+      document.querySelectorAll('[data-proposal-audience]').forEach(button=>button.classList.toggle('active',button.dataset.proposalAudience===proposalAudience));
+      document.getElementById('proposal-view-title').textContent=isBusiness?'4 раздела · ≥ 6 859 талонов':'6 услуг + вход для бизнеса';
+      document.getElementById('proposal-root-title').textContent=isBusiness?'Меню для ЮЛ и ИП':'Главный экран';
+      document.getElementById('proposal-root-level').textContent=isBusiness?'ЭКРАН 2':'ЭКРАН 1';
+      document.getElementById('proposal-hint').textContent=isBusiness?'Здесь собраны все исходные бизнес-операции.':'Вход «Бизнесу и ИП» расположен над сеткой услуг.';
+      const host=document.getElementById('proposal-entries');
+      host.innerHTML=data.map((item,i)=>`<button class="entry ${i===selected?'selected':''} ${item.direct?'direct':''}" data-proposal-index="${i}"><span class="entry-title ${item.items?'entry-mark':''}">${escapeHtml(item.title)}</span><span class="entry-sub">${escapeHtml(item.subtitle)}</span>${metricMarkup(item.count,!!item.partial,false)}</button>`).join('');
+      host.querySelectorAll('.entry').forEach(button=>button.addEventListener('click',()=>{
+        const index=Number(button.dataset.proposalIndex);
+        if(isBusiness){selectedProposalBusiness=index}else{selectedProposalRetail=index}
+        renderProposal();
+      }));
+      const item=data[selected],detail=document.getElementById('proposal-detail');
+      const crumb=isBusiness?'<span>ЮЛ и ИП</span><i>›</i><span>Экран 2</span>':'<span>Физические лица</span><i>›</i><span>Экран 1</span>';
+      let body='';
+      if(item.direct){body=`<div class="direct-box"><div><strong>Талон формируется сразу</strong><small>${escapeHtml(item.to.join(' · '))}</small>${item.from?`<small>${escapeHtml(item.from)}</small>`:''}</div><span class="tag">СРАЗУ</span></div>`}
+      else{
+        const ops=item.items.map(op=>op.group?`<div class="proposal-group-label">${escapeHtml(op.group)}</div>`:`<div class="op"><div><span class="op-title">${escapeHtml(op.title)}</span>${op.from?`<span class="proposal-op-note">${escapeHtml(op.from)}</span>`:''}</div><span class="route ${(op.to||item.to).length>1?'multi':''}">${escapeHtml((op.to||item.to).join(' · '))}</span><span class="op-count">${proposalCount(op.count)}</span></div>`).join('');
+        body=`<div class="levels"><div class="level-label">${isBusiness?'Экран 3':'Экран 2'} · выбор услуги</div>${item.title==='Касса'?`<div class="aggregate-note"><span>Оба варианта обмена валюты, вместе</span><b>${number(10694)} тал. · ${percent(10694)}%</b></div>`:''}<div class="ops proposal-ops">${ops}</div></div>`;
+      }
+      detail.innerHTML=`<div class="detail-top"><div class="crumb">${crumb}${item.items?`<i>›</i><span>Экран ${isBusiness?'3':'2'}</span>`:''}</div><h3>${escapeHtml(item.title)}</h3><p class="detail-desc">${item.direct?'Одна кнопка — сразу талон.':'Все операции раздела доступны без дополнительного промежуточного меню.'} ${proposalCount(item.count,!!item.partial)}</p></div>${body}`;
+    }
+    document.querySelectorAll('[data-proposal-audience]').forEach(button=>button.addEventListener('click',()=>{proposalAudience=button.dataset.proposalAudience;renderProposal()}));
+    document.querySelectorAll('.mode-tab').forEach(button=>button.addEventListener('click',()=>{
+      document.querySelectorAll('.mode-tab').forEach(item=>item.classList.toggle('active',item===button));
+      const mode=button.dataset.mode;
+      document.getElementById('navigation-mode').classList.toggle('hidden',mode!=='navigation');
+      document.getElementById('proposal-mode').classList.toggle('hidden',mode!=='proposal');
+      document.getElementById('statistics-mode').classList.toggle('hidden',mode!=='statistics');
+      document.querySelector('.top .eyebrow').textContent=mode==='proposal'?'МТС Банк · предлагаемая навигация':'МТС Банк · исходная навигация';
+      document.querySelector('.top .subtitle').textContent=mode==='proposal'?'Предлагаемая структура · To be':'Структура до изменений · Июль 2026';
+      document.querySelector('.top .stamp').textContent=mode==='proposal'?'Проект изменений':'По исходной таблице';
+      document.title=mode==='proposal'?'Предлагаемая структура меню · Июль 2026':'Исходная структура меню · Июль 2026';
+    }));
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));document.getElementById('retail-view').classList.toggle('hidden',tab.dataset.audience!=='retail');document.getElementById('business-view').classList.toggle('hidden',tab.dataset.audience!=='business')}));
+    renderRetail();renderBusiness();renderUnmatched();renderStatistics();renderProposal();
+  </script>
+</body>
+</html>
